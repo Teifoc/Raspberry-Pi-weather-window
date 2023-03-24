@@ -1,6 +1,6 @@
 # Raspberry-Pi-weather-window
 
-Golas:
+Goals:
 
 Here is the idea for implementing the project:
 The temperature sensor measures the temperature and - if possible - also the humidity inside the room.
