@@ -63,3 +63,47 @@ while True:
             time.sleep(1)
     else:
         print("Error: %d" % result.error_code)
+
+
+
+
+
+
+# Sourcecode for the servo:
+import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(18, GPIO.OUT)
+
+pwm = GPIO.PWM(18, 50)
+pwm.start(0)
+
+def set_angle(angle):
+    duty_cycle = angle / 18 + 2
+    GPIO.output(18, True)
+    pwm.ChangeDutyCycle(duty_cycle)
+    time.sleep(1)
+    GPIO.output(18, False)
+    pwm.ChangeDutyCycle(0)
+
+# set the servo motor to 0 degrees
+set_angle(0)
+
+# wait for 1 second
+time.sleep(1)
+
+# set the servo motor to 90 degrees
+set_angle(90)
+
+# wait for 1 second
+time.sleep(1)
+
+# set the servo motor to 180 degrees
+set_angle(180)
+
+# stop the PWM signal
+pwm.stop()
+
+# clean up the GPIO pins
+GPIO.cleanup()
