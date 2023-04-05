@@ -19,11 +19,12 @@ temp_threshold = 25.0
 humidity_threshold = 60.0
 
 # Define the weather API key and location
-weather_api_key = 'YOUR_API_KEY_HERE'
-weather_location = 'YOUR_LOCATION_HERE'
+weather_api_key = 'f9307df32efb3d34a029ad4cbf9ebdd2'
+weather_lat = '62.79446'
+weather_lon = '22.82822'
 
 # Define the API endpoint for the current weather data
-weather_url = f'https://api.openweathermap.org/data/2.5/weather?q={weather_location}&appid={weather_api_key}'
+weather_url = f'https://api.openweathermap.org/data/2.5/weather?lat={weather_lat}&lon={weather_lon}&appid={weather_api_key}'
 
 # Define the servo angle values for different window positions
 closed_angle = 0
@@ -69,41 +70,5 @@ while True:
 
 
 
-# Sourcecode for the servo:
-import RPi.GPIO as GPIO
-import time
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(18, GPIO.OUT)
 
-pwm = GPIO.PWM(18, 50)
-pwm.start(0)
-
-def set_angle(angle):
-    duty_cycle = angle / 18 + 2
-    GPIO.output(18, True)
-    pwm.ChangeDutyCycle(duty_cycle)
-    time.sleep(1)
-    GPIO.output(18, False)
-    pwm.ChangeDutyCycle(0)
-
-# set the servo motor to 0 degrees
-set_angle(0)
-
-# wait for 1 second
-time.sleep(1)
-
-# set the servo motor to 90 degrees
-set_angle(90)
-
-# wait for 1 second
-time.sleep(1)
-
-# set the servo motor to 180 degrees
-set_angle(180)
-
-# stop the PWM signal
-pwm.stop()
-
-# clean up the GPIO pins
-GPIO.cleanup()
