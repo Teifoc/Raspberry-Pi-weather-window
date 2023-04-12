@@ -58,9 +58,16 @@ while True:
         # Check if the temperature or humidity exceeds the thresholds
         if temperature > temp_threshold or humidity > humidity_threshold:
             window_position = get_window_position(get_weather_data())
+            GPIO.output(servo_pin, True)
             pwm.ChangeDutyCycle(2 + (window_position / 18))
             time.sleep(1)
+            GPIO.output(servo_pin, False)
+            pwm.ChangeDutyCycle(0)
         else:
+            GPIO.output(servo_pin, True)
+            pwm.ChangeDutyCycle(2 + (closed_angle / 18))
+            time.sleep(1)
+            GPIO.output(servo_pin, False)
             pwm.ChangeDutyCycle(0)
             time.sleep(1)
     else:
