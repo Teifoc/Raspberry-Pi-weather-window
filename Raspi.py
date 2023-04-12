@@ -71,11 +71,3 @@ while True:
             time.sleep(1)
     else:
         print("Error: %d" % result.error_code)
-
-
-
-
-
-
-
-
