@@ -79,7 +79,7 @@ current_position = closed_angle
 # Main loop
 while True:
     # Check if the temperature or humidity exceeds the thresholds
-    if get_temperature() > temp_threshold or get_humidity() > humidity_threshold:
+    if float(get_temperature()) > float(temp_threshold) or float(get_humidity()) > float(humidity_threshold):
         window_position = get_window_position(get_weather_data())
         # Check if the desired position is different from the current position
         if window_position != current_position:
