@@ -38,6 +38,7 @@ open_angle = 90
 def get_weather_data():
     response = requests.get(weather_url)
     data = json.loads(response.text)
+    print("Weather conditions: " + data['weather'][0]['main'] + "")
     return data
 
 # Function to determine the window position based on the current weather data
@@ -60,6 +61,7 @@ while True:
             window_position = get_window_position(get_weather_data())
             GPIO.output(servo_pin, True)
             pwm.ChangeDutyCycle(2 + (window_position / 18))
+            print("Window position: " + str(window_position) + " degrees")
             time.sleep(1)
             GPIO.output(servo_pin, False)
             pwm.ChangeDutyCycle(0)
@@ -70,5 +72,6 @@ while True:
             GPIO.output(servo_pin, False)
             pwm.ChangeDutyCycle(0)
             time.sleep(1)
+            print("Window closed")
     else:
         print("Error reading DHT11 data.")
