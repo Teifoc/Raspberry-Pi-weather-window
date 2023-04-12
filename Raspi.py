@@ -2,12 +2,15 @@ import RPi.GPIO as GPIO
 import time
 import requests
 import json
-import dht11
+import Adafruit_DHT
 
 # Set up the DHT11 temperature and humidity sensor
-instance = dht11.DHT11(pin=4)
+sensor = Adafruit_DHT.DHT11
+pin = 4
 
 # Set up the servo motor
+GPIO.setwarnings(False)
+GPIO.cleanup()
 servo_pin = 18
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(servo_pin, GPIO.OUT)
@@ -15,7 +18,7 @@ pwm = GPIO.PWM(servo_pin, 50)
 pwm.start(0)
 
 # Define the temperature and humidity thresholds
-temp_threshold = 25.0
+temp_threshold = 12.0
 humidity_threshold = 60.0
 
 # Define the weather API key and location
@@ -50,24 +53,15 @@ def get_window_position(weather_data):
 # Main loop
 while True:
     # Read the temperature and humidity values from the sensor
-    result = instance.read()
-    if result.is_valid():
-        temperature = result.temperature
-        humidity = result.humidity
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+    if humidity is not None and temperature is not None:
         # Check if the temperature or humidity exceeds the thresholds
         if temperature > temp_threshold or humidity > humidity_threshold:
             window_position = get_window_position(get_weather_data())
-            GPIO.output(servo_pin, True)
             pwm.ChangeDutyCycle(2 + (window_position / 18))
             time.sleep(1)
-            GPIO.output(servo_pin, False)
-            pwm.ChangeDutyCycle(0)
         else:
-            GPIO.output(servo_pin, True)
-            pwm.ChangeDutyCycle(2 + (closed_angle / 18))
-            time.sleep(1)
-            GPIO.output(servo_pin, False)
             pwm.ChangeDutyCycle(0)
             time.sleep(1)
     else:
-        print("Error: %d" % result.error_code)
+        print("Error reading DHT11 data.")
