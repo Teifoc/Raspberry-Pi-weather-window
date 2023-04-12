@@ -43,7 +43,7 @@ def get_weather_data():
 
 def get_temperature():
     # Read the temperature and humidity values from the sensor
-    temperature = Adafruit_DHT.read_retry(sensor, pin)
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 
     if temperature is not None:
         print("Temperature: " + str(temperature) + " C")
@@ -53,7 +53,7 @@ def get_temperature():
 
 def get_humidity():
     # Read the temperature and humidity values from the sensor
-    humidity = Adafruit_DHT.read_retry(sensor, pin)
+    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
 
     if humidity is not None:
         print("Humidity: " + str(humidity) + " %")
