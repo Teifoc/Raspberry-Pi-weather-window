@@ -41,8 +41,30 @@ def get_weather_data():
     print("Weather conditions: " + data['weather'][0]['main'] + "")
     return data
 
+def get_temperature():
+    # Read the temperature and humidity values from the sensor
+    temperature = Adafruit_DHT.read_retry(sensor, pin)
+
+    if temperature is not None:
+        print("Temperature: " + str(temperature) + " C")
+        return temperature
+    else:
+        print("Error reading DHT11 data.")
+
+def get_humidity():
+    # Read the temperature and humidity values from the sensor
+    humidity = Adafruit_DHT.read_retry(sensor, pin)
+
+    if humidity is not None:
+        print("Humidity: " + str(humidity) + " %")
+        return humidity      
+    else:
+        print("Error reading DHT11 data.")
+
+
 # Function to determine the window position based on the current weather data
 def get_window_position(weather_data):
+
     weather_conditions = weather_data['weather'][0]['main']
     if weather_conditions == 'Rain' or weather_conditions == 'Snow':
         return tilt_angle
@@ -51,23 +73,29 @@ def get_window_position(weather_data):
     else:
         return open_angle
 
+
+# Set the initial window position to closed
+current_position = closed_angle
 # Main loop
 while True:
-    # Read the temperature and humidity values from the sensor
-    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
-    print("Temperature: " + str(temperature) + " C")
-    print("Humidity: " + str(humidity) + " %")
-    if humidity is not None and temperature is not None:
-        # Check if the temperature or humidity exceeds the thresholds
-        if temperature > temp_threshold or humidity > humidity_threshold:
-            window_position = get_window_position(get_weather_data())
+    # Check if the temperature or humidity exceeds the thresholds
+    if get_temperature() > temp_threshold or get_humidity() > humidity_threshold:
+        window_position = get_window_position(get_weather_data())
+        # Check if the desired position is different from the current position
+        if window_position != current_position:
+            # Adjust the servo to the new position
             GPIO.output(servo_pin, True)
             pwm.ChangeDutyCycle(2 + (window_position / 18))
             print("Window position: " + str(window_position) + " degrees")
             time.sleep(1)
             GPIO.output(servo_pin, False)
             pwm.ChangeDutyCycle(0)
-        else:
+            # Update the current position
+            current_position = window_position
+    else:
+        # Check if the desired position is different from the current position
+        if current_position != closed_angle:
+            # Adjust the servo to the closed position
             GPIO.output(servo_pin, True)
             pwm.ChangeDutyCycle(2 + (closed_angle / 18))
             time.sleep(1)
@@ -75,5 +103,5 @@ while True:
             pwm.ChangeDutyCycle(0)
             time.sleep(1)
             print("Window closed")
-    else:
-        print("Error reading DHT11 data.")
+            # Update the current position
+            current_position = closed_angle
