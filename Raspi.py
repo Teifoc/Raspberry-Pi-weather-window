@@ -55,6 +55,8 @@ def get_window_position(weather_data):
 while True:
     # Read the temperature and humidity values from the sensor
     humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+    print("Temperature: " + str(temperature) + " C")
+    print("Humidity: " + str(humidity) + " %")
     if humidity is not None and temperature is not None:
         # Check if the temperature or humidity exceeds the thresholds
         if temperature > temp_threshold or humidity > humidity_threshold:
