@@ -92,6 +92,7 @@ while True:
             # Rotate the servo through all angles in increments of 1 second until it reaches 360 degrees
             for i in range(0, 360, 1):
                 angle = i % 90  # Limit the angle to 90 degrees
+                print("angle position: " + str(angle) + " degrees")
                 duty_cycle = 2 + (angle / 18)
                 pwm.ChangeDutyCycle(duty_cycle)
                 time.sleep(1)
