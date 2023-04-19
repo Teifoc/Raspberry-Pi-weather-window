@@ -3,6 +3,7 @@ import time
 import requests
 import json
 import Adafruit_DHT
+from functools import lru_cache
 
 # Set up the DHT11 temperature and humidity sensor
 sensor = Adafruit_DHT.DHT11
@@ -30,16 +31,27 @@ weather_lon = '22.82822'
 weather_url = f'https://api.openweathermap.org/data/2.5/weather?lat={weather_lat}&lon={weather_lon}&appid={weather_api_key}'
 
 # Define the servo angle values for different window positions
-closed_angle = 0
-tilt_angle = 45
-open_angle = 90
+closed_angle = 5#0
+tilt_angle = 7 #45
+open_angle = 10 #90
+
+
+def get_ttl_hash(seconds=3600):
+    """Return the same value withing `seconds` time period"""
+    return round(time.time() / seconds)
+
+
 
 # Function to get the current weather data from the API
-def get_weather_data():
+@lru_cache()
+def get_weather_data(ttl_hash=None):
     response = requests.get(weather_url)
+    print("get_weather_data() executed")
     data = json.loads(response.text)
     print("Weather conditions: " + data['weather'][0]['main'] + "")
     return data
+    
+
 
 def get_temperature():
     # Read the temperature and humidity values from the sensor
@@ -83,19 +95,20 @@ current_position = closed_angle
 while True:
     temperature = get_temperature()
     humidity = get_humidity()
-    weather_data = get_weather_data()
+    weather_data = get_weather_data(ttl_hash=get_ttl_hash())
     # Check if the temperature or humidity exceeds the thresholds or if it's raining or snowing
     if temperature > temp_threshold or humidity > humidity_threshold or weather_data['weather'][0]['main'] == 'Rain' or weather_data['weather'][0]['main'] == 'Snow':
         window_position = get_window_position(weather_data, temperature, humidity)
         # Check if the desired position is different from the current position
+        print("current position: " +str(current_position) +", window position: " +str(window_position))
         if window_position != current_position:
             # Rotate the servo through all angles in increments of 1 second until it reaches 360 degrees
-            for i in range(0, 360, 1):
-                angle = i % 90  # Limit the angle to 90 degrees
-                print("angle position: " + str(angle) + " degrees")
-                duty_cycle = 2 + (angle / 18)
-                pwm.ChangeDutyCycle(duty_cycle)
-                time.sleep(1)
+            # for i in range(0, 360, 1):
+                # angle = i % 90  # Limit the angle to 90 degrees
+                # print("angle position: " + str(angle) + " degrees")
+                # duty_cycle = 2 + (angle / 18)
+                # pwm.ChangeDutyCycle(duty_cycle)
+                # time.sleep(1)
 
             # Set the servo to the desired position
             GPIO.output(servo_pin, True)
