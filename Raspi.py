@@ -40,8 +40,6 @@ def get_ttl_hash(seconds=3600):
     """Return the same value withing `seconds` time period"""
     return round(time.time() / seconds)
 
-
-
 # Function to get the current weather data from the API
 @lru_cache()
 def get_weather_data(ttl_hash=None):
@@ -50,8 +48,6 @@ def get_weather_data(ttl_hash=None):
     data = json.loads(response.text)
     print("Weather conditions: " + data['weather'][0]['main'] + "")
     return data
-    
-
 
 def get_temperature():
     # Read the temperature and humidity values from the sensor
@@ -86,8 +82,6 @@ def get_window_position(weather_data, temperature, humidity):
     else:
         return closed_angle
 
-
-
 # Set the initial window position to closed
 current_position = closed_angle
 
@@ -102,14 +96,6 @@ while True:
         # Check if the desired position is different from the current position
         print("current position: " +str(current_position) +", window position: " +str(window_position))
         if window_position != current_position:
-            # Rotate the servo through all angles in increments of 1 second until it reaches 360 degrees
-            # for i in range(0, 360, 1):
-                # angle = i % 90  # Limit the angle to 90 degrees
-                # print("angle position: " + str(angle) + " degrees")
-                # duty_cycle = 2 + (angle / 18)
-                # pwm.ChangeDutyCycle(duty_cycle)
-                # time.sleep(1)
-
             # Set the servo to the desired position
             GPIO.output(servo_pin, True)
             duty_cycle = 2 + (window_position / 18)
@@ -118,10 +104,8 @@ while True:
             time.sleep(1)
             GPIO.output(servo_pin, False)
             pwm.ChangeDutyCycle(0)
-
             # Update the current position
             current_position = window_position
-
     else:
         # Check if the desired position is different from the current position
         if current_position != closed_angle:
@@ -135,6 +119,5 @@ while True:
             print("Window closed")
             # Update the current position
             current_position = closed_angle
-
     # Wait for some time before checking the conditions again
     time.sleep(5)
