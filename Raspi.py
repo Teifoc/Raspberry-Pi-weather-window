@@ -32,8 +32,8 @@ weather_url = f'https://api.openweathermap.org/data/2.5/weather?lat={weather_lat
 
 # Define the servo angle values for different window positions
 closed_angle = 5#0
-tilt_angle = 7 #45
-open_angle = 10 #90
+tilt_angle = 10 #45
+open_angle = 45 #90
 
 
 def get_ttl_hash(seconds=3600):
